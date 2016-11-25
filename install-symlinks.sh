@@ -1,6 +1,6 @@
 #!/bin/sh
 
-## creates scripts symlinks in the /usr/local/bin
+## creates script symlinks in /usr/local/bin
 
 echo "Linked: "
 for file in $PWD/*; do

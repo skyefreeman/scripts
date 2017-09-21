@@ -10,6 +10,6 @@ elif [ -f "$1".* ]; then
     exit
 fi
 
-sips --resampleWidth 20 "${f}/${1}" --out "${f}/$1"
-sips --resampleWidth 40 "${f}/${1}" --out "${f}/2x-$1"
-sips --resampleWidth 60 "${f}/${1}" --out "${f}/3x-$1"
+sips --resampleWidth 25 "${f}/${1}" --out "${f}/$1"
+sips --resampleWidth 50 "${f}/${1}" --out "${f}/2x-$1"
+sips --resampleWidth 75 "${f}/${1}" --out "${f}/3x-$1"

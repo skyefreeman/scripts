@@ -43,9 +43,14 @@ echo "Installing emacs config"
 git clone git@github.com:skyefreeman/.emacs.d.git
 mv .emacs.d ~/.emacs.d
 
+touch ~/.emacs
+echo '(package-initialize)' >> ~/.emacs
+echo '(load (expand-file-name "init.el" user-emacs-directory))' >> ~/.emacs
+
 echo "Installing dotfiles config"
 git clone git@github.com:skyefreeman/dotfiles.git
 mv dotfiles ~/dotfiles
+source ~/dotfiles/bash_config.sh
 
 echo "Installing hammerspoon config"
 git clone git@github.com:skyefreeman/.hammerspoon.git

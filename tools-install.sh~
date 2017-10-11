@@ -59,9 +59,6 @@ echo "Installing scripts"
 git clone git@github.com:skyefreeman/scripts.git
 mv scripts ~/scripts
 
-echo "Installing orgs"
-git clone git@github.com:skyefreeman/org.git
-
 echo "Cleaning up..."
 rm *.zip
 mv *.app /Applications

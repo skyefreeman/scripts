@@ -54,6 +54,7 @@ source ~/dotfiles/bash_config.sh
 
 echo "Installing hammerspoon config"
 git clone git@github.com:skyefreeman/.hammerspoon.git
+mv ~/.hammerspoon/
 
 echo "Installing scripts"
 git clone git@github.com:skyefreeman/scripts.git

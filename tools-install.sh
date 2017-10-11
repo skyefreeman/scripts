@@ -61,6 +61,7 @@ mv scripts ~/scripts
 
 echo "Installing orgs"
 git clone git@github.com:skyefreeman/org.git
+mv org ~/org
 
 echo "Cleaning up..."
 rm *.zip

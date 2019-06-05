@@ -16,12 +16,11 @@ sips --resampleWidth 512 "${f}/${1}" --out "${f}/iTunesArtwork.png"
 sips --resampleWidth 1024 "${f}/${1}" --out "${f}/iTunesArtwork@2x.png"
 
 #iphone
-sips --resampleWidth 40 "${f}/${1}" --out "${f}/icon_iphone_notification.png"
-sips --resampleWidth 60 "${f}/${1}" --out "${f}/icon_iphone_notification@2x.png"
+sips --resampleWidth 40 "${f}/${1}" --out "${f}/icon_iphone_notification@2x.png"
+sips --resampleWidth 60 "${f}/${1}" --out "${f}/icon_iphone_notification@3x.png"
 
-sips --resampleWidth 29 "${f}/${1}" --out "${f}/icon_iphone_spotlight_small.png"
-sips --resampleWidth 58 "${f}/${1}" --out "${f}/icon_iphone_spotlight_small@2x.png"
-sips --resampleWidth 87 "${f}/${1}" --out "${f}/icon_iphone_spotlight_small@3x.png"
+sips --resampleWidth 58 "${f}/${1}" --out "${f}/icon_iphone_settings@2x.png"
+sips --resampleWidth 87 "${f}/${1}" --out "${f}/icon_iphone_settings@3x.png"
 
 sips --resampleWidth 80 "${f}/${1}" --out "${f}/icon_iphone_spotlight@2x.png"
 sips --resampleWidth 120 "${f}/${1}" --out "${f}/icon_iphone_spotlight@3x.png"
@@ -41,6 +40,7 @@ sips --resampleWidth 80 "${f}/${1}" --out "${f}/icon_ipad_spotlight@2x.png"
 
 sips --resampleWidth 76 "${f}/${1}" --out "${f}/icon_ipad.png"
 sips --resampleWidth 152 "${f}/${1}" --out "${f}/icon_ipad@2x.png"
+
 sips --resampleWidth 167 "${f}/${1}" --out "${f}/icon_ipad_pro@2x.png"
 
 #apple watch

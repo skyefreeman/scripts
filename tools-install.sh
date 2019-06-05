@@ -1,20 +1,32 @@
 #!/bin/sh
 
+# Homebrew
+
 echo "Beginning tools installation."
 
 echo "Installing Homebrew"
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-echo "Installing brew-cask"
-brew tap caskroom/cask
-brew install brew-cask
-brew tap caskroom/versions
 
 echo "Installing Git"
 brew install git
 
 echo "Installing Emacs"
 brew install emacs --with-cocoa
+
+echo "Installing ripgrep"
+brew install ripgrep
+
+# Homebrew Cask
+
+echo "Installing brew-cask"
+brew tap caskroom/cask
+brew install brew-cask
+brew tap caskroom/versions
+
+echo "Installing Slack"
+brew cask install slack
+
+# Ruby
 
 echo "Installing RVM"
 \curl -sSL https://get.rvm.io | bash -s stable --ruby
@@ -28,6 +40,7 @@ sudo gem install cocoapods
 echo "Installing Fastlane"
 sudo gem install fastlane 
 
+#todo: move this to homebrew
 echo "Installing Hammerspoon"
 curl -O -J -L https://github.com/Hammerspoon/hammerspoon/releases/download/0.9.46/Hammerspoon-0.9.46.zip
 open Hammerspoon*
@@ -36,9 +49,7 @@ echo "Installing iTerm"
 curl -O -J -L https://iterm2.com/downloads/stable/iTerm2-3_0_12.zip
 open iTerm*
 
-echo "Installing Slack"
-brew cask install slack
-
+# Personal Configs
 echo "Installing emacs config"
 git clone git@github.com:skyefreeman/.emacs.d.git
 mv .emacs.d ~/.emacs.d
@@ -69,4 +80,3 @@ rm *.zip
 mv *.app /Applications
 
 echo "Finished tools installation."
-

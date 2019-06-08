@@ -62,28 +62,33 @@ fi
 
 echo ">> beginning tools installation."
 
-echo ">> installing Homebrew"
+echo ">> installing homebrew"
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-echo ">> installing Git"
+echo ">> installing git"
 brew install git
 
 echo ">> installing ripgrep"
 brew install ripgrep
 
+echo ">> installing heroku"
+brew tap heroku/brew && brew install heroku
+
+echo ">> installing vapor"
+
 # Homebrew Cask
 
-echo ">> installing Emacs"
+echo ">> installing emacs"
 brew cask install emacs
 
-echo ">> installing Slack"
+echo ">> installing slack"
 brew cask install slack
 
-echo ">> installing Hammerspoon"
+echo ">> installing hammerspoon"
 brew cask install hammerspoon
 open /Applications/Hammerspoon.app
 
-echo ">> installing iTerm"
+echo ">> installing iterm2"
 brew cask install iterm2
 
 # Ruby
@@ -96,13 +101,13 @@ rvm get stable
 echo ">> updating ruby"
 rvm install ruby --latest
 
-echo ">> installing Bundler"
+echo ">> installing bundler"
 gem install bundler
 
-echo ">> installing Cocoapods"
+echo ">> installing cocoapods"
 gem install cocoapods
 
-echo ">> installing Fastlane"
+echo ">> installing fastlane"
 gem install fastlane 
 
 # Personal Configs

@@ -1,82 +1,139 @@
 #!/bin/sh
 
+# Functions
+
+function generate_ssh_key {
+    # generate an ssh key
+    read -p ">> Please enter your email: " email
+    ssh-keygen -t rsa -b 4096 -C $email
+
+    # start ssh-agent in the background
+    eval "$(ssh-agent -s)"
+
+    # create ssh config
+    touch ~/.ssh/config
+    echo 'Host *\n AddKeysToAgent yes\n UseKeychain yes\n IdentityFile ~/.ssh/id_rsa' >> ~/.ssh/config
+    
+    # add ssh passphrase to the keychain
+    ssh-add -K ~/.ssh/id_rsa
+}
+
+function update_github_ssh {
+    read -p ">> Would you like to add your ssh to github now? (y/n) " answer
+    if [ "$answer" = "y" ]; then
+	pbcopy < ~/.ssh/id_rsa.pub
+	echo ">> ssh public key copied to clipboard"
+	echo ">> opening github now..."
+	sleep .5
+	open https://github.com/settings/ssh/new
+	read -n 1 -s -r -p ">> press any key to continue the installation. "
+    else
+	echo ">> continuing with installation."
+    fi
+}
+
+function configure_git {
+    read -p ">> Enter the email that you'd like to use for your git config: " email
+    git config --global user.email $email
+
+    read -p ">> Enter the username that you'd like to use for your git config: " username
+    git config --global user.name $username
+}
+
+# Ensure that we have the correct write permissions
+echo ">> making sure we have the correct write permissions."
+sudo chown -R `whoami` /usr/local
+
+# Ensure git is configured
+configure_git
+
+# Ensure ssh has been set up for git.
+
+SSH_KEY_FILE=~/.ssh/id_rsa
+if [ -e $SSH_KEY_FILE ]; then 
+    echo ">> ssh key set up, continuing."
+else 
+    echo ">> ssh key needs to be generated."
+    generate_ssh_key
+    update_github_ssh
+fi 
+
 # Homebrew
 
-echo "Beginning tools installation."
+echo ">> beginning tools installation."
 
-echo "Installing Homebrew"
+echo ">> installing Homebrew"
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-echo "Installing Git"
+echo ">> installing Git"
 brew install git
 
-echo "Installing Emacs"
-brew install emacs --with-cocoa
-
-echo "Installing ripgrep"
+echo ">> installing ripgrep"
 brew install ripgrep
 
 # Homebrew Cask
 
-echo "Installing brew-cask"
-brew tap caskroom/cask
-brew install brew-cask
-brew tap caskroom/versions
+echo ">> installing Emacs"
+brew cask install emacs
 
-echo "Installing Slack"
+echo ">> installing Slack"
 brew cask install slack
+
+echo ">> installing Hammerspoon"
+brew cask install hammerspoon
+open /Applications/Hammerspoon.app
+
+echo ">> installing iTerm"
+brew cask install iterm2
 
 # Ruby
 
-echo "Installing RVM"
+echo ">> installing rvm"
 \curl -sSL https://get.rvm.io | bash -s stable --ruby
+source $HOME/.rvm/scripts/rvm
+rvm get stable
 
-echo "Installing Bundler"
-sudo gem install bundler
+echo ">> updating ruby"
+rvm install ruby --latest
 
-echo "Installing Cocoapods"
-sudo gem install cocoapods
+echo ">> installing Bundler"
+gem install bundler
 
-echo "Installing Fastlane"
-sudo gem install fastlane 
+echo ">> installing Cocoapods"
+gem install cocoapods
 
-#todo: move this to homebrew
-echo "Installing Hammerspoon"
-curl -O -J -L https://github.com/Hammerspoon/hammerspoon/releases/download/0.9.46/Hammerspoon-0.9.46.zip
-open Hammerspoon*
-
-echo "Installing iTerm"
-curl -O -J -L https://iterm2.com/downloads/stable/iTerm2-3_0_12.zip
-open iTerm*
+echo ">> installing Fastlane"
+gem install fastlane 
 
 # Personal Configs
-echo "Installing emacs config"
+echo ">> installing emacs config"
+rm -rf ~/.emacs.d
 git clone git@github.com:skyefreeman/.emacs.d.git
-mv .emacs.d ~/.emacs.d
+mv .emacs.d ~
 
+rm ~/.emacs
 touch ~/.emacs
 echo '(package-initialize)' >> ~/.emacs
 echo '(load (expand-file-name "init.el" user-emacs-directory))' >> ~/.emacs
 
-echo "Installing dotfiles config"
+echo ">> installing dotfiles config"
 git clone git@github.com:skyefreeman/dotfiles.git
-mv dotfiles ~/dotfiles
+mv dotfiles ~
 source ~/dotfiles/bash_config.sh
 
-echo "Installing hammerspoon config"
+echo ">> installing hammerspoon config"
 git clone git@github.com:skyefreeman/.hammerspoon.git
-mv ~/.hammerspoon/
+mv .hammerspoon ~
 
-echo "Installing scripts"
+echo ">> installing scripts"
 git clone git@github.com:skyefreeman/scripts.git
-mv scripts ~/scripts
+mv scripts ~
 
-echo "Installing orgs"
+echo ">> installing orgs"
 git clone git@github.com:skyefreeman/org.git
-mv org ~/org
+mv org ~
 
-echo "Cleaning up..."
-rm *.zip
-mv *.app /Applications
+echo ">> setting up dev directory"
+mkdir ~/dev
 
-echo "Finished tools installation."
+echo ">> finished tools installation."

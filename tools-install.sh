@@ -83,17 +83,17 @@ function install_mac_os_tools {
     # Homebrew Cask
 
     echo ">> installing emacs"
-    brew cask install emacs
+    brew install --cask install emacs
 
     echo ">> installing slack"
-    brew cask install slack
+    brew install --cask install slack
 
     echo ">> installing hammerspoon"
-    brew cask install hammerspoon
+    brew install --cask install hammerspoon
     open /Applications/Hammerspoon.app
 
     echo ">> installing iterm2"
-    brew cask install iterm2
+    brew install --cask install iterm2
 
     # Ruby
 
@@ -199,7 +199,7 @@ configure_git
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     install_gnu_linux_tools
     install_gnu_linux_configs
-elif [[ "$OSTYPE" == "darwin" ]]; then
+elif [[ "$OSTYPE" == "darwin" || "$OSTYPE" == "darwin20" ]]; then
     install_mac_os_tools
     install_mac_os_configs
 else

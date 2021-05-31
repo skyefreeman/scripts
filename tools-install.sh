@@ -74,8 +74,6 @@ brew install ripgrep
 echo ">> installing heroku"
 brew tap heroku/brew && brew install heroku
 
-echo ">> installing vapor"
-
 # Homebrew Cask
 
 echo ">> installing emacs"

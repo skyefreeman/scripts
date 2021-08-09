@@ -1,6 +1,5 @@
 #!/bin/sh
 
-f=$(pwd)
 
 if [ ! -n "$1" ]; then
     echo "Must specify a filename."
@@ -11,48 +10,38 @@ elif [ -f "$1".* ]; then
     exit
 fi
 
-#itunes connect
-sips --resampleWidth 512 "${f}/${1}" --out "${f}/iTunesArtwork.png"
-sips --resampleWidth 1024 "${f}/${1}" --out "${f}/iTunesArtwork@2x.png"
+f=$(pwd)
 
-#iphone
-sips --resampleWidth 40 "${f}/${1}" --out "${f}/icon_iphone_notification@2x.png"
-sips --resampleWidth 60 "${f}/${1}" --out "${f}/icon_iphone_notification@3x.png"
+# App Store Connect
 
-sips --resampleWidth 58 "${f}/${1}" --out "${f}/icon_iphone_settings@2x.png"
-sips --resampleWidth 87 "${f}/${1}" --out "${f}/icon_iphone_settings@3x.png"
+sips --resampleWidth 1024 "${f}/${1}" --out "${f}/AppIcon@1024w.png"
 
-sips --resampleWidth 80 "${f}/${1}" --out "${f}/icon_iphone_spotlight@2x.png"
-sips --resampleWidth 120 "${f}/${1}" --out "${f}/icon_iphone_spotlight@3x.png"
+# iPhone
 
-sips --resampleWidth 120 "${f}/${1}" --out "${f}/icon_iphone@2x.png"
-sips --resampleWidth 180 "${f}/${1}" --out "${f}/icon_iphone@3x.png"
+sips --resampleWidth 40 "${f}/${1}" --out "${f}/AppIcon-iPhone-Notification@40w.png"
+sips --resampleWidth 60 "${f}/${1}" --out "${f}/AppIcon-iPhone-Notification@60w.png"
 
-#ipad
-sips --resampleWidth 20 "${f}/${1}" --out "${f}/icon_ipad_notifications.png"
-sips --resampleWidth 40 "${f}/${1}" --out "${f}/icon_ipad_notifications@2x.png"
+sips --resampleWidth 58 "${f}/${1}" --out "${f}/AppIcon-iPhone-Settings@58w.png"
+sips --resampleWidth 87 "${f}/${1}" --out "${f}/AppIcon-iPhone-Settings@87w.png"
 
-sips --resampleWidth 29 "${f}/${1}" --out "${f}/icon_ipad_settings.png"
-sips --resampleWidth 58 "${f}/${1}" --out "${f}/icon_ipad_settings@2x.png"
+sips --resampleWidth 80 "${f}/${1}" --out "${f}/AppIcon-iPhone-Spotlight@80w.png"
+sips --resampleWidth 120 "${f}/${1}" --out "${f}/AppIcon-iPhone-Spotlight@120w.png"
 
-sips --resampleWidth 40 "${f}/${1}" --out "${f}/icon_ipad_spotlight.png"
-sips --resampleWidth 80 "${f}/${1}" --out "${f}/icon_ipad_spotlight@2x.png"
+sips --resampleWidth 120 "${f}/${1}" --out "${f}/AppIcon-iPhone@120w.png"
+sips --resampleWidth 180 "${f}/${1}" --out "${f}/AppIcon-iPhone@180w.png"
 
-sips --resampleWidth 76 "${f}/${1}" --out "${f}/icon_ipad.png"
-sips --resampleWidth 152 "${f}/${1}" --out "${f}/icon_ipad@2x.png"
+# iPad
 
-sips --resampleWidth 167 "${f}/${1}" --out "${f}/icon_ipad_pro@2x.png"
+sips --resampleWidth 20 "${f}/${1}" --out "${f}/AppIcon-iPad-Notifications@20w.png"
+sips --resampleWidth 40 "${f}/${1}" --out "${f}/AppIcon-iPad-Notifications@40w.png"
 
-#apple watch
-sips --resampleWidth 48 "${f}/${1}" --out "${f}/icon_watch_notification_center_38mm.png"
-sips --resampleWidth 55 "${f}/${1}" --out "${f}/icon_watch_notification_center_42mm.png"
+sips --resampleWidth 29 "${f}/${1}" --out "${f}/AppIcon-iPad-Settings@29w.png"
+sips --resampleWidth 58 "${f}/${1}" --out "${f}/AppIcon-iPad-Settings@58w.png"
 
-sips --resampleWidth 58 "${f}/${1}" --out "${f}/icon_watch_companion_settings@2x.png"
-sips --resampleWidth 87 "${f}/${1}" --out "${f}/icon_watch_companion_settings@3x.png"
+sips --resampleWidth 40 "${f}/${1}" --out "${f}/AppIcon-iPad-Spotlight@40w.png"
+sips --resampleWidth 80 "${f}/${1}" --out "${f}/AppIcon-iPad-Spotlight@80w.png"
 
-sips --resampleWidth 80 "${f}/${1}" --out "${f}/icon_watch_home_screen@2x.png"
+sips --resampleWidth 76 "${f}/${1}" --out "${f}/AppIcon-iPad@76w.png"
+sips --resampleWidth 152 "${f}/${1}" --out "${f}/AppIcon-iPad@152w.png"
 
-sips --resampleWidth 88 "${f}/${1}" --out "${f}/icon_watch_long_look_42mm.png"
-
-sips --resampleWidth 172 "${f}/${1}" --out "${f}/icon_watch_short_look_38mm.png"
-sips --resampleWidth 196 "${f}/${1}" --out "${f}/icon_watch_short_look_42mm.png"
+sips --resampleWidth 167 "${f}/${1}" --out "${f}/AppIcon-iPad-Pro@167w.png"

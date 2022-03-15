@@ -12,8 +12,8 @@ function generate_ssh_key {
 
     # create ssh config
     touch ~/.ssh/config
-    echo 'Host *\n AddKeysToAgent yes\n UseKeychain yes\n IdentityFile ~/.ssh/id_rsa' >> ~/.ssh/config
-    
+    printf 'Host *\n AddKeysToAgent yes\n UseKeychain yes\n IdentityFile ~/.ssh/id_rsa' >> ~/.ssh/config
+        
     # add ssh passphrase to the keychain
     ssh-add -K ~/.ssh/id_rsa
 }

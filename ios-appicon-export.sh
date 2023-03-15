@@ -45,3 +45,20 @@ sips --resampleWidth 76 "${f}/${1}" --out "${f}/AppIcon-iPad@76w.png"
 sips --resampleWidth 152 "${f}/${1}" --out "${f}/AppIcon-iPad@152w.png"
 
 sips --resampleWidth 167 "${f}/${1}" --out "${f}/AppIcon-iPad-Pro@167w.png"
+
+# macOS
+
+sips --resampleWidth 16 "${f}/${1}" --out "${f}/AppIcon-macOS-16px@1x.png"
+sips --resampleWidth 32 "${f}/${1}" --out "${f}/AppIcon-macOS-16px@2x.png"
+
+sips --resampleWidth 32 "${f}/${1}" --out "${f}/AppIcon-macOS-32px@1x.png"
+sips --resampleWidth 64 "${f}/${1}" --out "${f}/AppIcon-macOS-32px@2x.png"
+
+sips --resampleWidth 128 "${f}/${1}" --out "${f}/AppIcon-macOS-128px@1x.png"
+sips --resampleWidth 256 "${f}/${1}" --out "${f}/AppIcon-macOS-128px@2x.png"
+
+sips --resampleWidth 256 "${f}/${1}" --out "${f}/AppIcon-macOS-256px@1x.png"
+sips --resampleWidth 512 "${f}/${1}" --out "${f}/AppIcon-macOS-256px@2x.png"
+
+sips --resampleWidth 512 "${f}/${1}" --out "${f}/AppIcon-macOS-512px@1x.png"
+sips --resampleWidth 1024 "${f}/${1}" --out "${f}/AppIcon-macOS-512px@2x.png"

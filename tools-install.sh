@@ -69,7 +69,13 @@ function install_mac_os_tools {
     # Homebrew
     
     echo ">> installing homebrew"
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    #    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/`whoami`/.bash_profile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    echo ">> installing gpg"
+    brew install gpg2
 
     echo ">> installing git"
     brew install git
@@ -83,27 +89,28 @@ function install_mac_os_tools {
     # Homebrew Cask
 
     echo ">> installing emacs"
-    brew install --cask install emacs
+    brew install --cask emacs
 
     echo ">> installing slack"
-    brew install --cask install slack
+    brew install --cask slack
 
     echo ">> installing hammerspoon"
-    brew install --cask install hammerspoon
+    brew install --cask hammerspoon
     open /Applications/Hammerspoon.app
 
     echo ">> installing iterm2"
-    brew install --cask install iterm2
+    brew install --cask iterm2
 
     # Ruby
 
     echo ">> installing rvm"
+    gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
     \curl -sSL https://get.rvm.io | bash -s stable --ruby
     source $HOME/.rvm/scripts/rvm
     rvm get stable
 
     echo ">> updating ruby"
-    rvm install ruby --latest
+    rvm reinstall 3.2.0 --with-openssl-dir=$(brew --prefix openssl) --with-readline-dir=$(brew --prefix readline) --with-libyaml-dir=$(brew --prefix libyaml) --disable-dtrace --disable-docs
 
     echo ">> installing bundler"
     gem install bundler
@@ -140,15 +147,18 @@ function install_shared_configs {
 
     echo ">> installing dotfiles config"
     git clone git@github.com:skyefreeman/dotfiles.git
+    rm -rf ~/dotfiles
     mv dotfiles ~
     source ~/dotfiles/bash_config.sh
 
     echo ">> installing scripts"
     git clone git@github.com:skyefreeman/scripts.git
+    rm -rf ~/scripts
     mv scripts ~
 
     echo ">> installing orgs"
     git clone git@github.com:skyefreeman/org.git
+    rm -rf ~/org
     mv org ~
 
     echo ">> setting up dev directory"
@@ -160,6 +170,7 @@ function install_mac_os_configs {
     
     echo ">> installing hammerspoon config"
     git clone git@github.com:skyefreeman/.hammerspoon.git
+    rm -rf ~/.hammerspoon
     mv .hammerspoon ~
 }
 
@@ -186,20 +197,22 @@ function introduction_animation {
     echo ""
 }
 
-# Script Start
+##### Script Start #####
 
 introduction_animation
-
-prompt_write_permission
 
 setup_system_ssh_keys
 
 configure_git
 
+INSTALLATION_DIR=/tmp/tools_installation
+mkdir $INSTALLATION_DIR
+cd $INSTALLATION_DIR
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     install_gnu_linux_tools
     install_gnu_linux_configs
-elif [[ "$OSTYPE" == "darwin" || "$OSTYPE" == "darwin20" ]]; then
+elif [[ "$OSTYPE" == darwin* ]]; then
     install_mac_os_tools
     install_mac_os_configs
 else
@@ -207,4 +220,8 @@ else
     exit 0	 	    
 fi
 
+cd ~
+rm -rf $INSTALLATION_DIR
+
 echo ">> SkyeTools installation complete."
+

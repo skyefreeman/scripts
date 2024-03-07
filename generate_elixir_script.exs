@@ -14,6 +14,7 @@ else
 IO.puts(\"Hello world\")
 "
   File.write(filename, contents)
+  File.chmod(filename, 0o755)
   IO.puts("#{filename} created.")
 end
 

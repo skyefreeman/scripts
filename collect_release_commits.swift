@@ -18,15 +18,21 @@ func shell(_ command: String) throws -> String {
 }
 
 struct CollectReleaseCommits: ParsableCommand {
+
+    @Argument(help: "The starting commit or tag.")
+    var start: String
+
+    @Argument(help: "The ending commit or tag.")
+    var end: String
+    
     static let configuration = CommandConfiguration(
-        abstract: "Given two commit hashes, return a list of commits.",
-        usage: "swift sh collect_release_commits.swift"
+        abstract: "Given two commit hashes or tags, return a list of single line commits.",
+        usage: "swift sh collect_release_commits.swift <start> <end>"
     )
 
     mutating func run() throws {
-        
-        git log --oneline --ancestry-path $START..$END
-        print("This works.")
+        let result = try! shell("git log --oneline \(start)..\(end)")
+        print(result)
     }
 }
 

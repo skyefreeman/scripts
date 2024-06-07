@@ -45,7 +45,7 @@ struct GenerateSwiftScript: ParsableCommand {
         abstract: "Generate a new Swift script file.",
         usage: "swift sh generate_swift_script.swift \"new_script.swift\""
     )
-
+    
     @Argument(help: "The script command name, in snakecase format.")
     var command: String
     

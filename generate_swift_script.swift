@@ -72,7 +72,7 @@ struct GenerateSwiftScript: ParsableCommand {
 
         do {
             try shell("chmod u+x \(outputFilepath)")
-            print("Created script: \(outputFilepath)")
+            print(outputFilepath)
         } catch {
             Self.exit(withError: error)
         }

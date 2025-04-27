@@ -11,21 +11,22 @@ defmodule GptToEmail do
     args = System.argv()
     
     case args do
-      [prompt, to, from] -> process_prompt_and_send_email(prompt, to, from)
+      [prompt, to, from, subject] -> process_prompt_and_send_email(prompt, to, from, subject)
       _ ->
-        IO.puts("Usage: ./gpt_to_email.exs \"your prompt\" \"recipient@example.com\" \"from@example.com\"")
+        IO.puts("Usage: ./gpt_to_email.exs \"your prompt\" \"recipient@example.com\" \"from@example.com\" \"Email subject\"")
         System.halt(1)
     end
   end
 
-  def process_prompt_and_send_email(prompt, to, from) do
+  def process_prompt_and_send_email(prompt, to, from, subject) do
     IO.puts("Processing prompt: #{prompt}")
     # Get response from GPT
     response = get_gpt_completion(prompt)
 
     IO.puts("Done. Will send to: #{to}")
+
     # Send email with the response
-    send_email(to, from, "GPT Response", response)
+    send_email(to, from, subject, response)
   end
 
   def get_gpt_completion(prompt) do

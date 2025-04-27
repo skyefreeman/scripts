@@ -23,7 +23,7 @@ defmodule GptToEmail do
     # Get response from GPT
     response = get_gpt_completion(prompt)
 
-    IO.puts("Done. Will send to: #{email}")
+    IO.puts("Done. Will send to: #{to}")
     # Send email with the response
     send_email(to, from, "GPT Response", response)
   end

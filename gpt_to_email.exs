@@ -13,7 +13,7 @@ defmodule GptToEmail do
     case args do
       [prompt, to, from] -> process_prompt_and_send_email(prompt, to, from)
       _ ->
-        IO.puts("Usage: ./gpt_to_email.exs \"your prompt\" \"recipient@example.com\"")
+        IO.puts("Usage: ./gpt_to_email.exs \"your prompt\" \"recipient@example.com\" \"from@example.com\"")
         System.halt(1)
     end
   end

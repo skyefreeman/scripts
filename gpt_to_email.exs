@@ -1,9 +1,9 @@
 #!/usr/bin/env elixir
 
-Mix.install([
-  :openai_ex,
-  :sendgrid
-])
+# Mix.install([
+#   :openai_ex,
+#   :sendgrid
+# ])
 
 defmodule GptToEmail do
 
@@ -18,6 +18,10 @@ defmodule GptToEmail do
     end
   end
 
+  def print_elixir_version do
+    IO.puts("Elixir version: #{System.version()}")
+  end
+  
   def process_prompt_and_send_email(prompt, to, from, subject) do
     IO.puts("Processing prompt: #{prompt}")
     # Get response from GPT
@@ -74,4 +78,5 @@ defmodule GptToEmail do
   end
 end
 
-GptToEmail.main()
+GptToEmail.print_elixir_version()
+# GptToEmail.main()

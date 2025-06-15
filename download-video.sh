@@ -13,7 +13,7 @@ DESTINATION_DIR_PATH=$(dirname "$DESTINATION_DIR")
 mkdir -p "$DESTINATION_DIR_PATH"
 
 echo "[skye] Retrieving video name..." >&2
-VIDEO_TITLE_RAW=$(yt-dlp --get-title "$VIDEO_URL")
+VIDEO_TITLE_RAW=$(yt-dlp --get-title --cookies-from-browser safari "$VIDEO_URL")
 
 # Get the video title and sanitize it for use as a filename
 echo "[skye] Received: $VIDEO_TITLE_RAW" >&2
@@ -22,5 +22,5 @@ UNIQUE_FILENAME="${VIDEO_TITLE}.mp4"
 echo "[skye] Doctored filename: $VIDEO_TITLE" >&2
 
 echo "[skye] Will begin downloading: $VIDEO_URL to $DESTINATION_DIR ..." >&2
-yt-dlp -f "bestvideo+bestaudio" -t mp4 -o "$DESTINATION_DIR/$UNIQUE_FILENAME" "$VIDEO_URL"
+yt-dlp --cookies-from-browser safari -f "bestvideo+bestaudio" -t mp4 -o "$DESTINATION_DIR/$UNIQUE_FILENAME" "$VIDEO_URL"
 echo "[skye] Downloaded video as: $UNIQUE_FILENAME" >&2

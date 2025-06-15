@@ -17,7 +17,7 @@ fi
 
 # Use yt-dlp to extract video URLs from the playlist
 echo '[skye] Retrieving playlist video identifiers...' >&2
-VIDEO_URLS=$(yt-dlp --get-id "$PLAYLIST_URL" | sed "s|^|https://www.youtube.com/watch?v=|")
+VIDEO_URLS=$(yt-dlp --cookies-from-browser safari --get-id "$PLAYLIST_URL" | sed "s|^|https://www.youtube.com/watch?v=|")
 
 # Check if yt-dlp succeeded
 if [ $? -ne 0 ]; then

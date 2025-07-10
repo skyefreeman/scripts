@@ -5,6 +5,9 @@ Mix.install([
   {:jason, "~> 1.4"}
 ])
 
+# Disable logger to prevent "writer crash" errors when piping.
+Logger.configure(level: :emergency)
+
 defmodule SECFilingFetcher do
   @moduledoc """
   Script to fetch SEC EDGAR filing documents (10-K, 10-Q, etc.) using the SEC's JSON API.
@@ -30,10 +33,24 @@ defmodule SECFilingFetcher do
     fetch_company_filings(cik, form_type)
   end
 
+  defp parse_args(["-t"]) do
+    fetch_and_display_all_tickers()
+  end
+
+  defp parse_args(["-t", search_text]) do
+    search_tickers(search_text)
+  end
+
   defp parse_args(_) do
-    IO.puts("Usage: elixir fetch_sec_filing_documents.exs -c <CIK> [form_type]")
-    IO.puts("Example: elixir fetch_sec_filing_documents.exs -c 0000320193")
-    IO.puts("Example: elixir fetch_sec_filing_documents.exs -c 0000320193 10-K")
+    IO.puts("Usage:")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -c <CIK> [form_type]")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -t [search_text]")
+    IO.puts("")
+    IO.puts("Examples:")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -c 0000320193")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -c 0000320193 10-K")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -t")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -t APPLE")
   end
 
   def fetch_company_filings(cik, form_type \\ nil) do
@@ -119,10 +136,103 @@ defmodule SECFilingFetcher do
     |> Enum.sort_by(& &1.report_date)
     |> Enum.each(fn filing ->
       [url] = generate_direct_urls(filing, ticker)
-      IO.puts("#{filing.report_date},#{filing.form},#{filing.accession_number},#{url}")
+      
+      filing_json = %{
+        "report_date" => filing.report_date,
+        "form" => filing.form,
+        "accession_number" => filing.accession_number,
+        "filing_url" => url
+      }
+      
+      safe_puts("#{Jason.encode!(filing_json)}")
     end)
   end
 
+  def fetch_and_display_all_tickers do
+    case get_company_tickers() do
+      {:ok, tickers} ->
+        display_tickers(tickers)
+      {:error, reason} ->
+        IO.puts("Error: #{reason}")
+    end
+  end
+
+  def search_tickers(search_text) do
+    case get_company_tickers() do
+      {:ok, tickers} ->
+        matching_tickers = filter_tickers(tickers, search_text)
+        display_tickers(matching_tickers)
+      {:error, reason} ->
+        IO.puts("Error: #{reason}")
+    end
+  end
+
+  defp get_company_tickers do
+    url = "https://www.sec.gov/files/company_tickers.json"
+    
+    headers = [
+      {"User-Agent", @user_agent},
+      {"Accept", "application/json"}
+    ]
+    
+    case HTTPoison.get(url, headers) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        case Jason.decode(body) do
+          {:ok, data} ->
+            # Convert the nested structure to a list of company maps
+            tickers = data
+            |> Map.values()
+            |> Enum.map(fn company ->
+              %{
+                "cik_str" => company["cik_str"],
+                "ticker" => company["ticker"],
+                "title" => company["title"]
+              }
+            end)
+            {:ok, tickers}
+          {:error, _} ->
+            {:error, "Failed to parse company tickers JSON"}
+        end
+        
+      {:ok, %HTTPoison.Response{status_code: status_code}} ->
+        {:error, "HTTP error: #{status_code}"}
+        
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, "Request failed: #{reason}"}
+    end
+  end
+
+  defp filter_tickers(tickers, search_text) do
+    search_lower = String.downcase(search_text)
+    
+    tickers
+    |> Enum.filter(fn ticker ->
+      ticker_match = String.contains?(String.downcase(ticker["ticker"]), search_lower)
+      title_match = String.contains?(String.downcase(ticker["title"]), search_lower)
+      ticker_match || title_match
+    end)
+  end
+
+  defp display_tickers(tickers) do
+    tickers
+    |> Enum.each(fn ticker ->
+      safe_puts("#{Jason.encode!(ticker)}")
+    end)
+  end
+
+  defp safe_puts(message) do
+    try do
+      IO.puts(message)
+    rescue
+      ErlangError -> 
+        # Handle broken pipe error when output is piped to commands like head
+        exit(:normal)
+    catch
+      :exit, :terminated ->
+        # Handle case where stdout is terminated
+        exit(:normal)
+    end
+  end
 
   defp extract_cik_from_accession(accession_number) do
     # Extract CIK from accession number format: NNNNNNNNNN-NN-NNNNNN

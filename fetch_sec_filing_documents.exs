@@ -41,16 +41,27 @@ defmodule SECFilingFetcher do
     search_tickers(search_text)
   end
 
+  defp parse_args(["-f", ticker]) do
+    fetch_filings_by_ticker(ticker)
+  end
+
+  defp parse_args(["-f", ticker, form_type]) do
+    fetch_filings_by_ticker(ticker, form_type)
+  end
+
   defp parse_args(_) do
     IO.puts("Usage:")
     IO.puts("  elixir fetch_sec_filing_documents.exs -c <CIK> [form_type]")
     IO.puts("  elixir fetch_sec_filing_documents.exs -t [search_text]")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -f <ticker> [form_type]")
     IO.puts("")
     IO.puts("Examples:")
     IO.puts("  elixir fetch_sec_filing_documents.exs -c 0000320193")
     IO.puts("  elixir fetch_sec_filing_documents.exs -c 0000320193 10-K")
     IO.puts("  elixir fetch_sec_filing_documents.exs -t")
     IO.puts("  elixir fetch_sec_filing_documents.exs -t APPLE")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -f AAPL")
+    IO.puts("  elixir fetch_sec_filing_documents.exs -f AAPL 10-K")
   end
 
   def fetch_company_filings(cik, form_type \\ nil) do
@@ -167,6 +178,21 @@ defmodule SECFilingFetcher do
     end
   end
 
+  def fetch_filings_by_ticker(ticker, form_type \\ nil) do
+    case get_company_tickers() do
+      {:ok, tickers} ->
+        case find_ticker_exact_match(tickers, ticker) do
+          {:ok, company} ->
+            cik = format_cik(Integer.to_string(company["cik_str"]))
+            fetch_company_filings(cik, form_type)
+          {:error, reason} ->
+            IO.puts("Error: #{reason}")
+        end
+      {:error, reason} ->
+        IO.puts("Error: #{reason}")
+    end
+  end
+
   defp get_company_tickers do
     url = "https://www.sec.gov/files/company_tickers.json"
     
@@ -211,6 +237,15 @@ defmodule SECFilingFetcher do
       title_match = String.contains?(String.downcase(ticker["title"]), search_lower)
       ticker_match || title_match
     end)
+  end
+
+  defp find_ticker_exact_match(tickers, ticker) do
+    ticker_upper = String.upcase(ticker)
+    
+    case Enum.find(tickers, fn t -> String.upcase(t["ticker"]) == ticker_upper end) do
+      nil -> {:error, "Ticker '#{ticker}' not found"}
+      company -> {:ok, company}
+    end
   end
 
   defp display_tickers(tickers) do

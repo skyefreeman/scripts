@@ -18,28 +18,31 @@ defmodule SECFilingFetcher do
   @user_agent "SEC Filing Fetcher 1.0 (your-email@example.com)"
 
   def start do
-    case System.argv() do
-      [cik] -> 
-        fetch_company_filings(cik)
-      [cik, form_type] -> 
-        fetch_company_filings(cik, form_type)
-      _ -> 
-        IO.puts("Usage: elixir fetch_sec_filing_documents.exs <CIK> [form_type]")
-        IO.puts("Example: elixir fetch_sec_filing_documents.exs 0000320193")
-        IO.puts("Example: elixir fetch_sec_filing_documents.exs 0000320193 10-K")
+    args = System.argv()
+    parse_args(args)
+  end
+
+  defp parse_args(["-c", cik | rest]) do
+    form_type = case rest do
+      [type] -> type
+      _ -> nil
     end
+    fetch_company_filings(cik, form_type)
+  end
+
+  defp parse_args(_) do
+    IO.puts("Usage: elixir fetch_sec_filing_documents.exs -c <CIK> [form_type]")
+    IO.puts("Example: elixir fetch_sec_filing_documents.exs -c 0000320193")
+    IO.puts("Example: elixir fetch_sec_filing_documents.exs -c 0000320193 10-K")
   end
 
   def fetch_company_filings(cik, form_type \\ nil) do
     cik = format_cik(cik)
     
-    IO.puts("Fetching filings for CIK: #{cik}")
-    
     case get_company_submissions(cik) do
       {:ok, data} ->
         ticker = extract_ticker(data)
         filings = extract_filings(data, form_type)
-        display_filings(filings)
         extract_document_urls(filings, ticker)
         
       {:error, reason} ->
@@ -111,35 +114,12 @@ defmodule SECFilingFetcher do
     end)
   end
 
-  defp display_filings(filings) do
-    IO.puts("\nFound #{length(filings)} filings:")
-    IO.puts(String.duplicate("-", 80))
-    
-    filings
-    |> Enum.each(fn filing ->
-      IO.puts("Form: #{filing.form}")
-      IO.puts("Accession Number: #{filing.accession_number}")
-      IO.puts("Filing Date: #{filing.filing_date}")
-      IO.puts("Report Date: #{filing.report_date}")
-      IO.puts(String.duplicate("-", 40))
-    end)
-  end
-
   defp extract_document_urls(filings, ticker) do
-    IO.puts("\nGenerating document URLs...")
-    
     filings
+    |> Enum.sort_by(& &1.report_date)
     |> Enum.each(fn filing ->
-      IO.puts("\n#{filing.form} - #{filing.filing_date}")
-      IO.puts("Accession: #{filing.accession_number}")
-      
-      # Generate direct URLs to common filing documents
-      urls = generate_direct_urls(filing, ticker)
-      
-      urls
-      |> Enum.each(fn url ->
-        IO.puts("  Document URL: #{url}")
-      end)
+      [url] = generate_direct_urls(filing, ticker)
+      IO.puts("#{filing.report_date},#{filing.form},#{filing.accession_number},#{url}")
     end)
   end
 
@@ -187,4 +167,4 @@ defmodule SECFilingFetcher do
   end
 end
 
-
+SECFilingFetcher.start()

@@ -18,7 +18,7 @@ defmodule SECFilingFetcher do
 
   @base_url "https://data.sec.gov"
   @archive_base_url "https://sec.gov"
-  @user_agent "SEC Filing Fetcher 1.0 (your-email@example.com)"
+  @user_agent "SEC Filing Fetcher 1.0"
 
   def start do
     args = System.argv()
@@ -27,7 +27,7 @@ defmodule SECFilingFetcher do
 
   defp parse_args(["-c", cik | rest]) do
     form_type = case rest do
-      [type] -> type
+      [type] -> normalize_form_type(type)
       _ -> nil
     end
     fetch_company_filings(cik, form_type)
@@ -46,7 +46,7 @@ defmodule SECFilingFetcher do
   end
 
   defp parse_args(["-f", ticker, form_type]) do
-    fetch_filings_by_ticker(ticker, form_type)
+    fetch_filings_by_ticker(ticker, normalize_form_type(form_type))
   end
 
   defp parse_args(_) do
@@ -86,6 +86,14 @@ defmodule SECFilingFetcher do
     |> String.pad_leading(10, "0")
   end
 
+  defp normalize_form_type(form_type) when is_binary(form_type) do
+    form_type
+    |> String.downcase()
+    |> String.replace("-", "")
+  end
+
+  defp normalize_form_type(nil), do: nil
+
   defp get_company_submissions(cik) do
     url = "#{@base_url}/submissions/CIK#{cik}.json"
     
@@ -123,13 +131,20 @@ defmodule SECFilingFetcher do
     accession_numbers = recent_filings["accessionNumber"]
     filing_dates = recent_filings["filingDate"]
     report_dates = recent_filings["reportDate"]
+    primary_documents = recent_filings["primaryDocument"]
     
     forms
     |> Enum.with_index()
     |> Enum.filter(fn {form, _index} ->
       case form_type do
-        nil -> form in ["10-K", "10-Q", "8-K", "10-K/A", "10-Q/A"]
-        type -> String.contains?(form, type)
+        nil -> 
+          # Include all forms when no type specified
+          true
+        type -> 
+          # Compare normalized versions
+          normalized_form = normalize_form_type(form)
+          normalized_type = normalize_form_type(type)
+          String.contains?(normalized_form, normalized_type)
       end
     end)
     |> Enum.map(fn {form, index} ->
@@ -137,16 +152,17 @@ defmodule SECFilingFetcher do
         form: form,
         accession_number: Enum.at(accession_numbers, index),
         filing_date: Enum.at(filing_dates, index),
-        report_date: Enum.at(report_dates, index)
+        report_date: Enum.at(report_dates, index),
+        primary_document: Enum.at(primary_documents, index)
       }
     end)
   end
 
-  defp extract_document_urls(filings, ticker) do
+  defp extract_document_urls(filings, _ticker) do
     filings
     |> Enum.sort_by(& &1.report_date)
     |> Enum.each(fn filing ->
-      [url] = generate_direct_urls(filing, ticker)
+      url = build_filing_url(filing)
       
       filing_json = %{
         "report_date" => filing.report_date,
@@ -294,21 +310,12 @@ defmodule SECFilingFetcher do
     end
   end
 
-  defp generate_direct_urls(filing, ticker) do
+  defp build_filing_url(filing) do
     clean_accession = String.replace(filing.accession_number, "-", "")
     cik = extract_cik_from_accession(filing.accession_number)
+    primary_document = filing.primary_document
     
-    # Generate document name using ticker and report date
-    # Format: ticker-YYYYMMDD (e.g., aapl-20240928)
-    clean_date = String.replace(filing.report_date, "-", "")
-    document_name = "#{ticker}-#{clean_date}"
-    
-    # Generate URLs for common filing document patterns
-    base_url = "#{@archive_base_url}/Archives/edgar/data/#{cik}/#{clean_accession}"
-    
-    [
-      "#{base_url}/#{document_name}.htm"
-    ]
+    "#{@archive_base_url}/Archives/edgar/data/#{cik}/#{clean_accession}/#{primary_document}"
   end
 end
 

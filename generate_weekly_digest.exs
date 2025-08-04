@@ -8,9 +8,9 @@ defmodule WeeklyDigest do
   
   @magazine_configs [
     %{code: "TE", name: "The Economist"},
-    %{code: "NY", name: "New Yorker"}, 
-    %{code: "SA", name: "Scientific American"},
-    %{code: "TI", name: "Time"}
+    %{code: "NY", name: "New Yorker"}
+    # %{code: "SA", name: "Scientific American"},
+    # %{code: "TM", name: "Time"}
   ]
 
   def main do
@@ -140,4 +140,4 @@ defmodule WeeklyDigest do
   end
 end
 
-# WeeklyDigest.main()
+WeeklyDigest.main()

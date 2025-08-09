@@ -159,20 +159,21 @@ defmodule SECFilingFetcher do
   end
 
   defp extract_document_urls(filings, _ticker) do
-    filings
+    documents = filings
     |> Enum.sort_by(& &1.report_date)
-    |> Enum.each(fn filing ->
+    |> Enum.map(fn filing ->
       url = build_filing_url(filing)
       
-      filing_json = %{
+      %{
         "report_date" => filing.report_date,
         "form" => filing.form,
         "accession_number" => filing.accession_number,
         "filing_url" => url
       }
-      
-      safe_puts("#{Jason.encode!(filing_json)}")
     end)
+    
+    output = %{"documents" => documents}
+    safe_puts(Jason.encode!(output))
   end
 
   def fetch_and_display_all_tickers do
